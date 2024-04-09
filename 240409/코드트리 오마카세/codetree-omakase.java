@@ -2,7 +2,8 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-
+	static int peopleCount;
+	static int sushiCount;
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
@@ -19,6 +20,7 @@ public class Main {
 			if (command == 100) {
 				int number = Integer.parseInt(st.nextToken());
 				String name = st.nextToken();
+				++sushiCount;
 				putSushi(name, number, time, sushies);
 			} else if (command == 200) {
 				int number = Integer.parseInt(st.nextToken());
@@ -26,6 +28,7 @@ public class Main {
 				int foodCount = Integer.parseInt(st.nextToken());
 				arrivedPeople.put(name, new Person(time, number, foodCount));
 				names.add(name);
+				++peopleCount;
 			} else {
 				takePhoto(answer, time, sushies, arrivedPeople, L, names);
 			}
@@ -36,7 +39,6 @@ public class Main {
 	
 	private static void takePhoto(StringBuilder answer, int time, Map<String, Queue<Sushi>> sushies,
 			Map<String, Person> arrivedPeople, int L, Set<String> names) {
-		int leftSushiCount = 0;
 		List<String> removeNames = new ArrayList<>();
 		for (String name : names) {
 			Person person = arrivedPeople.get(name);
@@ -48,6 +50,7 @@ public class Main {
 			person.foodCount -= haveCount - sushies.get(name).size();
 			if (person.foodCount == 0) { // 먹어야 되는 초밥 수를 다 먹었다면 스시, 도착 사람 삭제
 				removeNames.add(name);
+				--peopleCount;
 			}
 		}
 		for (String name : removeNames) {
@@ -55,18 +58,17 @@ public class Main {
 			arrivedPeople.remove(name);
 			names.remove(name);
 		}
-		for (String name : sushies.keySet()) {
-			leftSushiCount += sushies.get(name).size();
-		}
-		answer.append(arrivedPeople.size()).append(" ").append(leftSushiCount).append("\n");
+		answer.append(peopleCount).append(" ").append(sushiCount).append("\n");
 	}
 
 	private static void haveSushies(int time, int L, Queue<Sushi> sushies, Person person) {
 		Queue<Sushi> leftSushies = new LinkedList<>();
 		while (!sushies.isEmpty()) {
 			Sushi sushi = sushies.poll();
+			--sushiCount;
 			if (!canHaveSushi(time, L, sushi, person)) {
 				leftSushies.add(sushi);
+				++sushiCount;
 			}
 		}
 		
