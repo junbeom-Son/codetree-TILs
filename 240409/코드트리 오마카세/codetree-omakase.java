@@ -40,6 +40,9 @@ public class Main {
 		List<String> removeNames = new ArrayList<>();
 		for (String name : names) {
 			Person person = arrivedPeople.get(name);
+			if (!sushies.containsKey(name)) {
+				continue;
+			}
 			int haveCount = sushies.get(name).size(); // 먹기 전 회전판 위에 있는 초밥 수
 			haveSushies(time, L, sushies.get(name), person);
 			person.foodCount -= haveCount - sushies.get(name).size();
