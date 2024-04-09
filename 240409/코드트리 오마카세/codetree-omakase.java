@@ -76,8 +76,8 @@ public class Main {
 	}
 	
 	private static boolean canHaveSushi(int photoTime, int L, Sushi sushi, Person person) {
-		int rotateTime = (person.time - sushi.time) % L;
-		int sushiIndex = (sushi.number + rotateTime) % L;
+		int rotateTime = (person.time - sushi.time + L) % L;
+		int sushiIndex = (sushi.number + rotateTime + L) % L;
 		int personIndex = person.number;
 		if (personIndex < sushiIndex) {
 			personIndex += L;
