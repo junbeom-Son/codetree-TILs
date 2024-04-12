@@ -13,7 +13,7 @@ def effectNotificationCounts(c, number, depth, value):
     for reachDepth in notificationCounts[c]:
         if reachDepth >= depth:
             notificationCounts[number][reachDepth - depth] = notificationCounts[number].get(reachDepth - depth, 0) + (notificationCounts[c][reachDepth] * value)
-    if number > 0:
+    if number > 0 and isOnNotification[number]:
         effectNotificationCounts(c, parents[number], depth + 1, value)
 
 def setNotification(c):
