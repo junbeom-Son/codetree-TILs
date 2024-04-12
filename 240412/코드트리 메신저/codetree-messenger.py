@@ -28,19 +28,15 @@ def setPower(c, power):
     originalPower = authorities[c]
     number = c
     for depth in range(originalPower, -1, -1):
-        if not isOnNotification[number]:
-            break
         notificationCounts[number][depth] -= 1
-        if number == 0:
+        if number == 0 or not isOnNotification[number]:
             break
         number = parents[number]
     authorities[c] = power
     number = c
     for depth in range(power, -1, -1):
-        if not isOnNotification[number]:
-            break
         notificationCounts[number][depth] = notificationCounts[number].get(depth, 0) + 1
-        if number == 0:
+        if number == 0 or not isOnNotification[number]:
             break
         number = parents[number]
 
@@ -90,10 +86,3 @@ for query in queries:
         answers.append(getNotificationCount(query[1]))
 
 print('\n'.join(map(str, answers)))
-
-# answers = list(int(input()) for _ in range(126))
-# actual = list(int(input()) for _ in range(126))
-#
-# for i in range(126):
-#     if answers[i] != actual[i]:
-#         print(i, answers[i], actual[i])
