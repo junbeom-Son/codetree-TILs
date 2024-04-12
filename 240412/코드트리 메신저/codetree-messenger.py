@@ -1,37 +1,60 @@
 from collections import deque
 
+def setNotificationCounts(number):
+    for child in children[number]:
+        setNotificationCounts(child)
+    notificationCounts[number][authorities[number]] = notificationCounts[number].get(authorities[number], 0) + 1
+    parent = parents[number]
+    for depth in notificationCounts[number]:
+        if depth != 0:
+            notificationCounts[parent][depth - 1] = notificationCounts[parent].get(depth - 1, 0) + notificationCounts[number][depth]
+
+def effectNotificationCounts(c, number, depth, value):
+    for reachDepth in notificationCounts[c]:
+        if reachDepth >= depth:
+            notificationCounts[number][reachDepth - depth] = notificationCounts[number].get(reachDepth - depth, 0) + (notificationCounts[c][reachDepth] * value)
+    if number > 0:
+        effectNotificationCounts(c, parents[number], depth + 1, value)
+
 def setNotification(c):
     if isOnNotification[c]:
         isOnNotification[c] = False
+        effectNotificationCounts(c, parents[c], 1, -1)
     else:
         isOnNotification[c] = True
+        effectNotificationCounts(c, parents[c], 1, 1)
 
 def setPower(c, power):
+    originalPower = authorities[c]
+    number = c
+    for depth in range(originalPower, -1, -1):
+        notificationCounts[number][depth] -= 1
+        if number == 0:
+            break
+        number = parents[number]
     authorities[c] = power
+    number = c
+    for depth in range(power, -1, -1):
+        notificationCounts[number][depth] = notificationCounts[number].get(depth, 0) + 1
+        if number == 0:
+            break
+        number = parents[number]
 
 def exchangeParents(c1, c2):
-    p1, p2 = parents[c1], parents[c2]
-    children[p1].remove(c1)
-    children[p2].remove(c2)
-    children[p1].add(c2)
-    children[p2].add(c1)
+    if isOnNotification[c1]:
+        effectNotificationCounts(c1, parents[c1], 1, -1)
+        effectNotificationCounts(c1, parents[c2], 1, 1)
+    if isOnNotification[c2]:
+        effectNotificationCounts(c2, parents[c1], 1, 1)
+        effectNotificationCounts(c2, parents[c2], 1, -1)
     parents[c1], parents[c2] = parents[c2], parents[c1]
 
 def getNotificationCount(c):
-    queue = deque()
-    for child in children[c]:
-        queue.append((1, child))
     count = 0
-    while queue:
-        depth, number = queue.popleft()
-        if not isOnNotification[number]: # 알람 설정이 꺼져 있으면 그 자식들도 전파 불가능
-            continue
-        if depth <= authorities[number]: # 채팅방 c 까지 알람이 도달하는 경우 카운트
-            count += 1
-        for child in children[number]: # 다음 자식으로 전파
-            queue.append((depth + 1, child))
+    for key in notificationCounts[c]:
+        count += notificationCounts[c][key]
 
-    return count
+    return count - 1
 
 N, Q = map(int, input().split())
 initialInput = list(map(int, input().split()))
@@ -40,8 +63,12 @@ authorities = [0] + initialInput[(N + 1):]
 queries = [list(map(int, input().split())) for _ in range(Q - 1)]
 isOnNotification = [True] * (N + 1)
 children = [set() for _ in range(N + 1)]
+notificationCounts = [dict() for _ in range(N + 1)]
 for i in range(1, N + 1):
     children[parents[i]].add(i)
+
+for child in children[0]:
+    setNotificationCounts(child)
 
 answers = []
 for query in queries:
