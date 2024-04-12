@@ -27,9 +27,6 @@ def setNotification(c):
 def setPower(c, power):
     originalPower = authorities[c]
     number = c
-    if not isOnNotification[c]:
-        authorities[c] = power
-        return
     for depth in range(originalPower, -1, -1):
         if not isOnNotification[number]:
             break
