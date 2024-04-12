@@ -34,7 +34,7 @@ def setPower(c, power):
         notificationCounts[number][depth] -= 1
         if not notificationCounts[number][depth]:
             del notificationCounts[number][depth]
-        if number == 0:
+        if number == 0 or not isOnNotification[number]:
             break
         number = parents[number]
     authorities[c] = power
