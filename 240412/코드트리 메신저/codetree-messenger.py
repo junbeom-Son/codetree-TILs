@@ -27,8 +27,13 @@ def setNotification(c):
 def setPower(c, power):
     originalPower = authorities[c]
     number = c
+    if not isOnNotification[c]:
+        authorities[c] = power
+        return
     for depth in range(originalPower, -1, -1):
         notificationCounts[number][depth] -= 1
+        if not notificationCounts[number][depth]:
+            del notificationCounts[number][depth]
         if number == 0:
             break
         number = parents[number]
@@ -41,6 +46,8 @@ def setPower(c, power):
         number = parents[number]
 
 def exchangeParents(c1, c2):
+    if parents[c1] == parents[c2]:
+        return
     if isOnNotification[c1]:
         effectNotificationCounts(c1, parents[c1], 1, -1)
         effectNotificationCounts(c1, parents[c2], 1, 1)
