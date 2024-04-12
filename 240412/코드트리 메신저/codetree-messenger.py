@@ -59,8 +59,9 @@ def getNotificationCount(c):
     count = 0
     for key in notificationCounts[c]:
         count += notificationCounts[c][key]
-
-    return count - 1
+    if c != 0:
+        count -= 1
+    return count
 
 N, Q = map(int, input().split())
 initialInput = list(map(int, input().split()))
@@ -89,3 +90,10 @@ for query in queries:
         answers.append(getNotificationCount(query[1]))
 
 print('\n'.join(map(str, answers)))
+
+# answers = list(int(input()) for _ in range(126))
+# actual = list(int(input()) for _ in range(126))
+#
+# for i in range(126):
+#     if answers[i] != actual[i]:
+#         print(i, answers[i], actual[i])
