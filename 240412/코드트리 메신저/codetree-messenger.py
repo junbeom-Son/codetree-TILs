@@ -31,15 +31,17 @@ def setPower(c, power):
         authorities[c] = power
         return
     for depth in range(originalPower, -1, -1):
+        if not isOnNotification[number]:
+            break
         notificationCounts[number][depth] -= 1
-        if not notificationCounts[number][depth]:
-            del notificationCounts[number][depth]
-        if number == 0 or not isOnNotification[number]:
+        if number == 0:
             break
         number = parents[number]
     authorities[c] = power
     number = c
     for depth in range(power, -1, -1):
+        if not isOnNotification[number]:
+            break
         notificationCounts[number][depth] = notificationCounts[number].get(depth, 0) + 1
         if number == 0:
             break
